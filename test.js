@@ -3,7 +3,7 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 
 const creds = require("./google_creds.json"); // the file saved above
 var moment = require("moment"); // require
-SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
+const SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
 
 (async () => {
   const doc = new GoogleSpreadsheet(SHEET_ID);
@@ -23,15 +23,24 @@ SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
   // duplicate template sheet
   const newSheetId = sheetCount;
   await templateSheet.duplicate({
-    title: moment().format("MMMM Do YYYY, h:mm:ss a"),
+    title: `${sheetCount} helelo - fjdskf`,
     index: sheetCount,
     id: newSheetId,
   });
 
   const currentSheet = await doc.sheetsById[newSheetId];
-  // await sheet.loadCells("A1:M26");
-  // const top_label_cell = await sheet.getCellByA1("F1");
-  // console.log(doc.title);
-  // console.log(sheet.title);
-  // console.log(top_label_cell.value);
+  await currentSheet.loadCells("A1:M26");
+  const top_label_cell = await currentSheet.getCellByA1("B2");
+  const bottom_label_cell = await currentSheet.getCellByA1("B26");
+  const right_label_cell = await currentSheet.getCellByA1("M3");
+  const left_label_cell = await currentSheet.getCellByA1("A3");
+  top_label_cell.value = "ice cream";
+  bottom_label_cell.value = "soda";
+  right_label_cell.value = "desert";
+  left_label_cell.value = "mountain";
+  await currentSheet.saveUpdatedCells();
+
+  console.log(
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`
+  );
 })();

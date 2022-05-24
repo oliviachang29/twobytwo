@@ -1,5 +1,10 @@
 const { App } = require("@slack/bolt");
+const { GoogleSpreadsheet } = require("google-spreadsheet");
+
 const CHANNEL_NAME = "hackathon-test";
+const creds = require("./google_creds.json"); // the file saved above
+const SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
+const doc = new GoogleSpreadsheet(SHEET_ID);
 
 // set up environment variables
 if (process.env.NODE_ENV !== "production") {
@@ -47,6 +52,49 @@ let currentTwobytwo = {
 //   await say({ text: "Label 1: ", thread_ts: message.ts });
 // });
 
+async function loadGSheet() {}
+
+async function createTwoByTwo() {
+  // FIX THIS STUPID THING
+  await doc.useServiceAccountAuth(creds);
+  //   await doc.useServiceAccountAuth({
+  //     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  //     private_key: process.env.GOOGLE_PRIVATE_KEY,
+  //   });
+
+  await doc.loadInfo(); // loads document properties and worksheets
+  const sheetCount = await doc.sheetCount;
+
+  // get template sheet
+  const templateSheet = await doc.sheetsByTitle["template"];
+
+  // duplicate template sheet
+  const newSheetId = sheetCount;
+  const newSheetTitle = `${sheetCount} ${currentTwobytwo.top}-${currentTwobytwo.bottom}-${currentTwobytwo.left}-${currentTwobytwo.right}`;
+  await templateSheet.duplicate({
+    title: newSheetTitle,
+    index: sheetCount,
+    id: newSheetId,
+  });
+
+  // get template sheet
+  const currentSheet = await doc.sheetsById[newSheetId];
+  await currentSheet.loadCells("A1:M26");
+  const top_label_cell = await currentSheet.getCellByA1("B2");
+  const bottom_label_cell = await currentSheet.getCellByA1("B26");
+  const right_label_cell = await currentSheet.getCellByA1("M3");
+  const left_label_cell = await currentSheet.getCellByA1("A3");
+
+  // update values
+  top_label_cell.value = currentTwobytwo.top;
+  bottom_label_cell.value = currentTwobytwo.bottom;
+  right_label_cell.value = currentTwobytwo.right;
+  left_label_cell.value = currentTwobytwo.left;
+  await currentSheet.saveUpdatedCells();
+
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`;
+}
+
 async function saylabelInput(say, ts, location, example) {
   try {
     await say({
@@ -79,31 +127,43 @@ async function saylabelInput(say, ts, location, example) {
   }
 }
 
-app.event("app_mention", async ({ event, say }) => {
-  currentTs = event.ts;
-  saylabelInput(say, currentTs, "Left", "desert");
-});
-
-// Find conversation ID using the conversations.list method
-async function findConversation(channel_name) {
+async function sayGSheetUrl(say, sheetUrl) {
   try {
-    const result = await app.client.conversations.list({
-      token: process.env.SLACK_BOT_TOKEN,
+    await say({
+      text: "Twobytwo sheets link",
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `Plot yourself on a twobytwo!`,
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Open",
+              emoji: true,
+            },
+            url: sheetUrl,
+          },
+        },
+      ],
     });
-
-    for (const channel of result.channels) {
-      if (channel.name === channel_name) {
-        channelId = channel.id;
-        break;
-      }
-    }
   } catch (error) {
     console.error(error);
   }
 }
 
+app.event("app_mention", async ({ event, say }) => {
+  currentTs = event.ts;
+  console.log(event);
+  saylabelInput(say, currentTs, "Left", "desert");
+});
+
 app.action("left_label_submitted", async ({ action, ack, say }) => {
   await ack();
+  console.log(action);
   currentTwobytwo.left = action.value;
   saylabelInput(say, currentTs, "Right", "mountain");
 });
@@ -117,35 +177,24 @@ app.action("right_label_submitted", async ({ action, ack, say }) => {
 app.action("top_label_submitted", async ({ action, ack, say }) => {
   await ack();
   currentTwobytwo.top = action.value;
-  saylabelInput(say, currentTs, "Bottom", "mountain");
+  saylabelInput(say, currentTs, "Bottom", "cake");
 });
 
 app.action("bottom_label_submitted", async ({ action, ack, say }) => {
   await ack();
   currentTwobytwo.bottom = action.value;
   console.log(currentTwobytwo);
-  say({ text: "Generating google sheet...", thread_ts: currentTs });
+  say({ text: "Generating twobytwo...", thread_ts: currentTs });
+  const sheetUrl = await createTwoByTwo();
+  sayGSheetUrl(say, sheetUrl);
 });
-
-async function askForAxes() {
-  try {
-    // Call the chat.postMessage method using the WebClient
-    const result = await app.client.chat.postMessage({
-      channel: channelId,
-      text: "Hello world",
-    });
-
-    console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 (async () => {
   // Start your app
   await app.start(process.env.PORT || 3000);
 
   console.log("⚡️ Bolt app is running!");
+  await loadGSheet();
   // Find conversation with a specified channel `name`
   //   await findConversation(CHANNEL_NAME);
   //   console.log(channelId);
