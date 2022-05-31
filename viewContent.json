@@ -1,0 +1,92 @@
+{
+  "type": "modal",
+  "callback_id": "modal-identifier",
+  "title": {
+    "type": "plain_text",
+    "text": "Two By Two",
+    "emoji": true
+  },
+  "submit": {
+    "type": "plain_text",
+    "text": "Generate",
+    "emoji": true
+  },
+  "close": {
+    "type": "plain_text",
+    "text": "Cancel",
+    "emoji": true
+  },
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "X Axis",
+        "emoji": true
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "left",
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "text_input"
+      },
+      "label": {
+        "type": "plain_text",
+        "text": "Left Label",
+        "emoji": true
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "right",
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "text_input"
+      },
+      "label": {
+        "type": "plain_text",
+        "text": "Right Label",
+        "emoji": true
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "Y Axis",
+        "emoji": true
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "top",
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "text_input"
+      },
+      "label": {
+        "type": "plain_text",
+        "text": "Top Label",
+        "emoji": true
+      }
+    },
+    {
+      "type": "input",
+      "block_id": "bottom",
+      "element": {
+        "type": "plain_text_input",
+        "action_id": "text_input"
+      },
+      "label": {
+        "type": "plain_text",
+        "text": "Bottom Label",
+        "emoji": true
+      }
+    }
+  ]
+}

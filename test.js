@@ -1,18 +1,14 @@
 require("dotenv").config();
 const { GoogleSpreadsheet } = require("google-spreadsheet");
-
-const creds = require("./google_creds.json"); // the file saved above
-var moment = require("moment"); // require
-const SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
+var moment = require("moment");
+const currentTwobytwo = { left: "dj", right: "ie", top: "ji", bottom: "jkd" };
 
 (async () => {
-  const doc = new GoogleSpreadsheet(SHEET_ID);
-  // FIX THIS STUPID THING
-  await doc.useServiceAccountAuth(creds);
-  //   await doc.useServiceAccountAuth({
-  //     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  //     private_key: process.env.GOOGLE_PRIVATE_KEY,
-  //   });
+  const doc = new GoogleSpreadsheet(process.env.SHEET_ID);
+  await doc.useServiceAccountAuth({
+    private_key: process.env.GOOGLE_PRIVATE_KEY,
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  });
 
   await doc.loadInfo(); // loads document properties and worksheets
   sheetCount = await doc.sheetCount;
@@ -22,8 +18,11 @@ const SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
 
   // duplicate template sheet
   const newSheetId = sheetCount;
+  const newSheetTitle = `${moment().format("M-D")} ${currentTwobytwo.top}-${
+    currentTwobytwo.bottom
+  }-${currentTwobytwo.left}-${currentTwobytwo.right}`;
   await templateSheet.duplicate({
-    title: `${sheetCount} helelo - fjdskf`,
+    title: `${newSheetTitle}`,
     index: sheetCount,
     id: newSheetId,
   });
@@ -34,10 +33,10 @@ const SHEET_ID = "1qEBIiUPjF6UWi08VDeumVYRmgbH3-xOmek8sncKt7g0";
   const bottom_label_cell = await currentSheet.getCellByA1("B26");
   const right_label_cell = await currentSheet.getCellByA1("M3");
   const left_label_cell = await currentSheet.getCellByA1("A3");
-  top_label_cell.value = "ice cream";
-  bottom_label_cell.value = "soda";
-  right_label_cell.value = "desert";
-  left_label_cell.value = "mountain";
+  top_label_cell.value = currentTwobytwo.top;
+  bottom_label_cell.value = currentTwobytwo.bottom;
+  right_label_cell.value = currentTwobytwo.right;
+  left_label_cell.value = currentTwobytwo.left;
   await currentSheet.saveUpdatedCells();
 
   console.log(
