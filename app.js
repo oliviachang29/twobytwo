@@ -21,6 +21,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   socketMode: true,
   appToken: process.env.SLACK_APP_TOKEN,
+  port: process.env.PORT || 3000,
 });
 
 async function createTwoByTwo(currentTwobytwo) {
@@ -129,7 +130,6 @@ app.command("/twobytwo", async ({ ack, payload, client }) => {
 
 (async () => {
   // Start your app
-  await app.start();
-
+  await app.start(process.env.PORT || 3000);
   console.log("twobytwo app is running!");
 })();
