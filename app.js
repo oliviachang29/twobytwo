@@ -42,6 +42,7 @@ async function createTwoByTwo(currentTwobytwo) {
   await templateSheet.duplicate({
     title: newSheetTitle,
     index: sheetCount,
+    id: newSheetId,
   });
 
   // get created sheet
