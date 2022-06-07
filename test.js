@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 var moment = require("moment");
-const currentTwobytwo = { left: "dj", right: "ie", top: "ji", bottom: "jkd" };
+const currentTwobytwo = { left: "a", right: "b", top: "c", bottom: "d" };
 
 (async () => {
   const doc = new GoogleSpreadsheet(process.env.SHEET_ID);
@@ -40,6 +40,6 @@ const currentTwobytwo = { left: "dj", right: "ie", top: "ji", bottom: "jkd" };
   await currentSheet.saveUpdatedCells();
 
   console.log(
-    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`
+    `https://docs.google.com/spreadsheets/d/${process.env.SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`
   );
 })();

@@ -56,7 +56,7 @@ async function createTwoByTwo(currentTwobytwo) {
 
   await currentSheet.saveUpdatedCells();
 
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`;
+  return `https://docs.google.com/spreadsheets/d/${process.env.SHEET_ID}/edit?rm=demo&chrome=false&preview#gid=${newSheetId}`;
 }
 
 async function sayGSheetUrl(user, sheetUrl) {
